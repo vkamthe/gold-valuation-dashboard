@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Valuation Dashboard — 50-Year Macro Metrics</title>
+<meta name="description" content="Interactive 50-year gold valuation dashboard analyzing Gold vs US M2 Money Supply, Shadow Gold Price, Inflation-Adjusted Real Price, Gold-to-Silver Ratio, and Central Bank metrics.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --bg-main: #0B0E14;
+    --bg-card: #141923;
+    --bg-card-hover: #1B2230;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(212, 175, 55, 0.3);
+    --text-primary: #F0F4F8;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --gold: #F59E0B;
+    --gold-bright: #FBBF24;
+    --gold-glow: rgba(245, 158, 11, 0.15);
+    --accent-blue: #38BDF8;
+    --accent-green: #10B981;
+    --accent-red: #EF4444;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  html[data-theme="light"] {
+    --bg-main: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-card-hover: #F1F5F9;
+    --border: rgba(0, 0, 0, 0.1);
+    --border-strong: rgba(217, 119, 6, 0.4);
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --gold: #D97706;
+    --gold-bright: #B45309;
+    --gold-glow: rgba(217, 119, 6, 0.1);
+    --accent-blue: #0284C7;
+    --accent-green: #059669;
+    --accent-red: #DC2626;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gold-glow);
+    color: var(--gold-bright);
+    border: 1px solid var(--border-strong);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px var(--gold-bright);
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--text-primary) 60%, var(--gold-bright));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .toggle-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toggle-btn:hover {
+    border-color: var(--border-strong);
+    background: var(--bg-card-hover);
+  }
+
+  /* Method Collapsible */
+  details.method-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0 1.25rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.2s;
+  }
+  details.method-tile[open] {
+    border-color: var(--border-strong);
+  }
+  details.method-tile > summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 0;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--gold-bright);
+  }
+  details.method-tile > summary::-webkit-details-marker { display: none; }
+  .chev {
+    color: var(--text-muted);
+    font-size: 18px;
+    transition: transform 0.2s;
+  }
+  details.method-tile[open] .chev { transform: rotate(180deg); }
+
+  .method-body {
+    padding: 0 0 1.25rem;
+    font-size: 14px;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
+  }
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+  .method-card {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+  .method-card h4 {
+    margin: 0 0 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .method-card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Summary Metrics Cards Grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .metric-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--border);
+  }
+  .metric-card.gold-card::before { background: var(--gold); }
+  .metric-card.blue-card::before { background: var(--accent-blue); }
+  .metric-card.green-card::before { background: var(--accent-green); }
+  .metric-card.red-card::before { background: var(--accent-red); }
+
+  .metric-lbl {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .metric-val {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .metric-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Chart Layout */
+  .charts-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 600px) {
+    .charts-section { grid-template-columns: 1fr; }
+  }
+
+  .chart-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .chart-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .canvas-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <div class="badge"><span class="dot"></span> 50-YEAR MACRO VALUATION MODEL</div>
+      <h1>Gold Valuation Dashboard</h1>
+      <p class="sub">Evaluating USD Gold prices (1971 – 2026) vs Money Supply, Shadow Prices, Inflation & Asset Ratios.</p>
+    </div>
+    <div class="actions">
+      <button class="toggle-btn" id="themeBtn" aria-label="Toggle Theme">
+        <span id="themeIcon">🌙</span> <span id="themeText">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Method & Rationale -->
+  <details class="method-tile" open>
+    <summary>
+      <span>📖 Gold Valuation Framework & Baseline Principles</span>
+      <span class="chev">▼</span>
+    </summary>
+    <div class="method-body">
+      <div class="method-grid">
+        <div class="method-card">
+          <h4>💵 Gold / M2 Money Supply</h4>
+          <p>Measures how much fiat currency creation is backed by physical gold stock. At the 1980 inflation peak, Gold market cap equaled 100%+ of US M2. At the 2000 trough, it dropped to ~15%.</p>
+        </div>
+        <div class="method-card">
+          <h4>🏦 Shadow Gold Price</h4>
+          <p>Calculates the theoretical gold price ($/oz) required if US Official Gold Reserves (261.5M oz) were to 100% back the entire US M2 money supply.</p>
+        </div>
+        <div class="method-card">
+          <h4>📊 Real Gold Price (CPI-Adjusted)</h4>
+          <p>Strips out 50+ years of US CPI inflation to evaluate gold's true purchasing power. Adjusts the 1980 $850 peak into constant 2026 dollars (~$2,800–$3,200/oz).</p>
+        </div>
+        <div class="method-card">
+          <h4>⚖️ Gold / Silver & Oil Ratios</h4>
+          <p>Cross-asset purchasing power. Historical Gold/Silver ratio averages ~62.5. Values >80 signal precious metals undervaluation, while Gold/Oil averages ~18 barrels/oz.</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Summary Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card gold-card">
+      <div class="metric-lbl">Gold Spot Price (USD)</div>
+      <div class="metric-val" id="valSpot">$0.00</div>
+      <div class="metric-sub" id="valCap">Market Cap: --</div>
+    </div>
+
+    <div class="metric-card blue-card">
+      <div class="metric-lbl">Gold / US M2 Ratio</div>
+      <div class="metric-val" id="valM2Pct">0.0%</div>
+      <div class="metric-sub">1980 Peak: 100% · 2000 Trough: 15%</div>
+    </div>
+
+    <div class="metric-card red-card">
+      <div class="metric-lbl">Shadow Gold Price</div>
+      <div class="metric-val" id="valShadow">$0</div>
+      <div class="metric-sub">Theoretical 100% US M2 Reserve Backing</div>
+    </div>
+
+    <div class="metric-card green-card">
+      <div class="metric-lbl">Gold / Silver Ratio (GSR)</div>
+      <div class="metric-val" id="valGSR">0.0</div>
+      <div class="metric-sub">50-Yr Historical Mean: 62.5</div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <!-- Chart 1: Gold / M2 Ratio -->
+    <div class="chart-box">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Gold Market Cap vs. US M2 Money Supply (%)</div>
+          <div class="chart-desc">Historical paper currency debasement ratio (1971–2026)</div>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chartM2"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 2: Nominal vs Real Price -->
+    <div class="chart-box">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Nominal vs. Inflation-Adjusted (Real) Gold Price</div>
+          <div class="chart-desc">Purchasing power adjusted to 2026 CPI USD</div>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chartRealPrice"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 3: Cross Asset Ratios -->
+    <div class="chart-box">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Precious Metals & Commodity Ratios</div>
+          <div class="chart-desc">Gold-to-Silver Ratio (GSR) & Gold-to-Oil Ratio</div>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chartRatios"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart 4: US Debt & M2 -->
+    <div class="chart-box">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Shadow Gold Price vs. Actual Spot Gold</div>
+          <div class="chart-desc">Comparing spot gold ($/oz) against M2 reserve shadow price</div>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chartShadow"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>Data Updated: <span id="valUpdated">--</span></div>
+    <div>Sources: LBMA, FRED, World Gold Council, Yahoo Finance</div>
+  </footer>
+</div>
+
+<script>
+let RAW_DATA = null;
+let charts = {};
+
+const fmtCurr = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+const fmtNum = (val, dec=1) => (val != null ? val.toFixed(dec) : '--');
+
+async function loadData() {
+  try {
+    const res = await fetch('data/data.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    RAW_DATA = await res.json();
+    renderDashboard();
+  } catch (e) {
+    console.error('Data load error:', e);
+  }
+}
+
+function renderDashboard() {
+  if (!RAW_DATA) return;
+  const l = RAW_DATA.latest;
+
+  // Header & Cards
+  document.getElementById('valSpot').textContent = fmtCurr(l.gold_price);
+  document.getElementById('valCap').textContent = `Market Cap: $${l.gold_mkt_cap_trillion} Trillion`;
+  document.getElementById('valM2Pct').textContent = `${l.gold_m2_pct.toFixed(1)}%`;
+  document.getElementById('valShadow').textContent = fmtCurr(l.shadow_gold_price);
+  document.getElementById('valGSR').textContent = `${l.gsr ? l.gsr.toFixed(1) : '--'} : 1`;
+  document.getElementById('valUpdated').textContent = RAW_DATA.updated;
+
+  const dates = RAW_DATA.series.map(s => s.date);
+
+  // Theme colors
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? '#94A3B8' : '#475569';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+
+  Chart.defaults.color = textColor;
+  Chart.defaults.font.family = "'Inter', sans-serif";
+
+  // Chart 1: Gold / M2 Ratio
+  if (charts.m2) charts.m2.destroy();
+  charts.m2 = new Chart(document.getElementById('chartM2'), {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: 'Gold / US M2 Ratio (%)',
+        data: RAW_DATA.series.map(s => s.gold_m2_pct),
+        borderColor: '#38BDF8',
+        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+        fill: true,
+        tension: 0.3,
+        borderWidth: 2,
+        pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'M2 Ratio (%)' } }
+      }
+    }
+  });
+
+  // Chart 2: Nominal vs Real Price
+  if (charts.realPrice) charts.realPrice.destroy();
+  charts.realPrice = new Chart(document.getElementById('chartRealPrice'), {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Inflation-Adjusted Real Gold ($/oz)',
+          data: RAW_DATA.series.map(s => s.gold_real),
+          borderColor: '#F59E0B',
+          borderWidth: 2.5,
+          tension: 0.3,
+          pointRadius: 2
+        },
+        {
+          label: 'Nominal Spot Gold ($/oz)',
+          data: RAW_DATA.series.map(s => s.gold_nominal),
+          borderColor: '#94A3B8',
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          tension: 0.3,
+          pointRadius: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'USD / oz' } }
+      }
+    }
+  });
+
+  // Chart 3: Ratios
+  if (charts.ratios) charts.ratios.destroy();
+  charts.ratios = new Chart(document.getElementById('chartRatios'), {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Gold/Silver Ratio (GSR)',
+          data: RAW_DATA.series.map(s => s.gsr),
+          borderColor: '#10B981',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 2
+        },
+        {
+          label: 'Gold/Oil Ratio (bbl/oz)',
+          data: RAW_DATA.series.map(s => s.gor),
+          borderColor: '#EF4444',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor } }
+      }
+    }
+  });
+
+  // Chart 4: Shadow Gold Price
+  if (charts.shadow) charts.shadow.destroy();
+  charts.shadow = new Chart(document.getElementById('chartShadow'), {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          label: 'Shadow Gold Price ($/oz)',
+          data: RAW_DATA.series.map(s => s.shadow_gold_price),
+          borderColor: '#EF4444',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 2
+        },
+        {
+          label: 'Actual Spot Gold ($/oz)',
+          data: RAW_DATA.series.map(s => s.gold_nominal),
+          borderColor: '#F59E0B',
+          borderWidth: 2,
+          tension: 0.3,
+          pointRadius: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor }, title: { display: true, text: 'USD / oz' } }
+      }
+    }
+  });
+}
+
+// Theme Switcher
+const root = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+const themeIcon = document.getElementById('themeIcon');
+const themeText = document.getElementById('themeText');
+
+themeBtn.addEventListener('click', () => {
+  const current = root.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  themeIcon.textContent = next === 'dark' ? '🌙' : '☀️';
+  themeText.textContent = next === 'dark' ? 'Dark' : 'Light';
+  if (RAW_DATA) renderDashboard();
+});
+
+loadData();
+</script>
+</body>
+</html>
