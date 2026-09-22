@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold Valuation Dashboard — 50-Year Macro Metrics</title>
-<meta name="description" content="Interactive 50-year gold valuation dashboard analyzing Gold vs US M2 Money Supply, Shadow Gold Price, Inflation-Adjusted Real Price, Gold-to-Silver Ratio, and Central Bank metrics.">
+<meta name="description" content="Interactive 50-year gold valuation dashboard analyzing Gold vs US M2 Money Supply, Central Bank Gold Reserves, Inflation-Adjusted Real Price, and Commodity Ratios.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +26,7 @@
     --gold-glow: rgba(245, 158, 11, 0.15);
     --accent-blue: #38BDF8;
     --accent-green: #10B981;
+    --accent-purple: #A855F7;
     --accent-red: #EF4444;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -45,6 +46,7 @@
     --gold-glow: rgba(217, 119, 6, 0.1);
     --accent-blue: #0284C7;
     --accent-green: #059669;
+    --accent-purple: #7E22CE;
     --accent-red: #DC2626;
   }
 
@@ -137,7 +139,7 @@
     background: var(--bg-card-hover);
   }
 
-  /* Method Collapsible */
+  /* Method Collapsible - Collapsed by default */
   details.method-tile {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -176,7 +178,7 @@
   }
   .method-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 1.25rem;
     margin-top: 1rem;
   }
@@ -199,6 +201,16 @@
     font-size: 13px;
     line-height: 1.5;
   }
+
+  .update-box {
+    margin-top: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--bg-main);
+    border: 1px dashed var(--border-strong);
+    border-radius: 10px;
+    font-size: 13px;
+  }
+  .update-box strong { color: var(--gold-bright); }
 
   /* Summary Metrics Cards Grid */
   .metrics-grid {
@@ -232,8 +244,8 @@
   }
   .metric-card.gold-card::before { background: var(--gold); }
   .metric-card.blue-card::before { background: var(--accent-blue); }
+  .metric-card.purple-card::before { background: var(--accent-purple); }
   .metric-card.green-card::before { background: var(--accent-green); }
-  .metric-card.red-card::before { background: var(--accent-red); }
 
   .metric-lbl {
     font-size: 12px;
@@ -242,6 +254,18 @@
     letter-spacing: 0.05em;
     color: var(--text-muted);
     margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .date-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold-bright);
+    background: var(--gold-glow);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
   }
   .metric-val {
     font-size: 26px;
@@ -315,7 +339,7 @@
     <div>
       <div class="badge"><span class="dot"></span> 50-YEAR MACRO VALUATION MODEL</div>
       <h1>Gold Valuation Dashboard</h1>
-      <p class="sub">Evaluating USD Gold prices (1971 – 2026) vs Money Supply, Shadow Prices, Inflation & Asset Ratios.</p>
+      <p class="sub">Evaluating USD Gold prices (1971 – 2026) vs Money Supply, Central Bank Reserves & Commodity Ratios.</p>
     </div>
     <div class="actions">
       <button class="toggle-btn" id="themeBtn" aria-label="Toggle Theme">
@@ -324,30 +348,35 @@
     </div>
   </header>
 
-  <!-- Method & Rationale -->
-  <details class="method-tile" open>
+  <!-- Method & Principles (Collapsed by default) -->
+  <details class="method-tile">
     <summary>
-      <span>📖 Gold Valuation Framework & Baseline Principles</span>
+      <span>📖 Valuation Framework, Method & Update Schedule</span>
       <span class="chev">▼</span>
     </summary>
     <div class="method-body">
       <div class="method-grid">
         <div class="method-card">
           <h4>💵 Gold / M2 Money Supply</h4>
-          <p>Measures how much fiat currency creation is backed by physical gold stock. At the 1980 inflation peak, Gold market cap equaled 100%+ of US M2. At the 2000 trough, it dropped to ~15%.</p>
+          <p>Measures fiat currency creation backed by global gold stock (~212,500 tonnes). At the 1980 inflation peak, Gold market cap equaled 100%+ of US M2. At the 2000 trough, it dropped to ~15%.</p>
         </div>
         <div class="method-card">
-          <h4>🏦 Shadow Gold Price</h4>
-          <p>Calculates the theoretical gold price ($/oz) required if US Official Gold Reserves (261.5M oz) were to 100% back the entire US M2 money supply.</p>
+          <h4>🏛 Central Bank Reserve Buying</h4>
+          <p>Tracks net annual gold purchases by global central banks (metric tonnes/year) and central bank gold as a % of total global foreign exchange reserves.</p>
         </div>
         <div class="method-card">
           <h4>📊 Real Gold Price (CPI-Adjusted)</h4>
-          <p>Strips out 50+ years of US CPI inflation to evaluate gold's true purchasing power. Adjusts the 1980 $850 peak into constant 2026 dollars (~$2,800–$3,200/oz).</p>
+          <p>Strips out 50+ years of US CPI inflation to evaluate gold's true purchasing power in constant 2026 USD terms.</p>
         </div>
         <div class="method-card">
           <h4>⚖️ Gold / Silver & Oil Ratios</h4>
-          <p>Cross-asset purchasing power. Historical Gold/Silver ratio averages ~62.5. Values >80 signal precious metals undervaluation, while Gold/Oil averages ~18 barrels/oz.</p>
+          <p>Cross-asset purchasing power. Historical Gold/Silver ratio averages ~62.5, while Gold/Oil averages ~18 barrels/oz.</p>
         </div>
+      </div>
+
+      <div class="update-box">
+        <strong>🔄 Dashboard Update Frequency & Automation:</strong>
+        This dashboard updates automatically every weekday at <strong>22:00 UTC (18:30 IST / post-US market close)</strong> via GitHub Actions. It executes <code>fetch.py</code> to pull live market quotes from <code>yfinance</code> (Yahoo Finance) and recalculates macro valuation metrics.
       </div>
     </div>
   </details>
@@ -355,25 +384,37 @@
   <!-- Summary Cards -->
   <div class="metrics-grid">
     <div class="metric-card gold-card">
-      <div class="metric-lbl">Gold Spot Price (USD)</div>
+      <div class="metric-lbl">
+        <span>Gold Spot Price (USD)</span>
+        <span class="date-tag" id="dateSpot">--</span>
+      </div>
       <div class="metric-val" id="valSpot">$0.00</div>
       <div class="metric-sub" id="valCap">Market Cap: --</div>
     </div>
 
     <div class="metric-card blue-card">
-      <div class="metric-lbl">Gold / US M2 Ratio</div>
+      <div class="metric-lbl">
+        <span>Gold / US M2 Ratio</span>
+        <span class="date-tag" id="dateM2">--</span>
+      </div>
       <div class="metric-val" id="valM2Pct">0.0%</div>
       <div class="metric-sub">1980 Peak: 100% · 2000 Trough: 15%</div>
     </div>
 
-    <div class="metric-card red-card">
-      <div class="metric-lbl">Shadow Gold Price</div>
-      <div class="metric-val" id="valShadow">$0</div>
-      <div class="metric-sub">Theoretical 100% US M2 Reserve Backing</div>
+    <div class="metric-card purple-card">
+      <div class="metric-lbl">
+        <span>Central Bank Buying</span>
+        <span class="date-tag" id="dateCB">--</span>
+      </div>
+      <div class="metric-val" id="valCB">+0 t/yr</div>
+      <div class="metric-sub" id="valCBRes">Gold % of FX Reserves: --</div>
     </div>
 
     <div class="metric-card green-card">
-      <div class="metric-lbl">Gold / Silver Ratio (GSR)</div>
+      <div class="metric-lbl">
+        <span>Gold / Silver Ratio</span>
+        <span class="date-tag" id="dateGSR">--</span>
+      </div>
       <div class="metric-val" id="valGSR">0.0</div>
       <div class="metric-sub">50-Yr Historical Mean: 62.5</div>
     </div>
@@ -420,23 +461,23 @@
       </div>
     </div>
 
-    <!-- Chart 4: US Debt & M2 -->
+    <!-- Chart 4: Central Bank Gold Buying & Reserves -->
     <div class="chart-box">
       <div class="chart-header">
         <div>
-          <div class="chart-title">Shadow Gold Price vs. Actual Spot Gold</div>
-          <div class="chart-desc">Comparing spot gold ($/oz) against M2 reserve shadow price</div>
+          <div class="chart-title">Central Bank Gold Net Buying & Reserves</div>
+          <div class="chart-desc">Net Annual Purchases (Tonnes/yr) & Gold % of Global FX Reserves</div>
         </div>
       </div>
       <div class="canvas-wrapper">
-        <canvas id="chartShadow"></canvas>
+        <canvas id="chartCB"></canvas>
       </div>
     </div>
   </div>
 
   <footer>
-    <div>Data Updated: <span id="valUpdated">--</span></div>
-    <div>Sources: LBMA, FRED, World Gold Council, Yahoo Finance</div>
+    <div>Data Last Updated: <span id="valUpdated">--</span></div>
+    <div>Automated Daily via GitHub Actions · Sources: LBMA, FRED, WGC, Yahoo Finance</div>
   </footer>
 </div>
 
@@ -445,7 +486,6 @@ let RAW_DATA = null;
 let charts = {};
 
 const fmtCurr = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
-const fmtNum = (val, dec=1) => (val != null ? val.toFixed(dec) : '--');
 
 async function loadData() {
   try {
@@ -461,12 +501,20 @@ async function loadData() {
 function renderDashboard() {
   if (!RAW_DATA) return;
   const l = RAW_DATA.latest;
+  const dateStr = l.date || 'Current';
 
-  // Header & Cards
+  // Dates on Cards
+  document.getElementById('dateSpot').textContent = dateStr;
+  document.getElementById('dateM2').textContent = dateStr;
+  document.getElementById('dateCB').textContent = dateStr;
+  document.getElementById('dateGSR').textContent = dateStr;
+
+  // Header & Card Values
   document.getElementById('valSpot').textContent = fmtCurr(l.gold_price);
   document.getElementById('valCap').textContent = `Market Cap: $${l.gold_mkt_cap_trillion} Trillion`;
   document.getElementById('valM2Pct').textContent = `${l.gold_m2_pct.toFixed(1)}%`;
-  document.getElementById('valShadow').textContent = fmtCurr(l.shadow_gold_price);
+  document.getElementById('valCB').textContent = `+${l.cb_net_buying_tonnes} t/yr`;
+  document.getElementById('valCBRes').textContent = `Gold % of FX Reserves: ${l.cb_reserve_pct}%`;
   document.getElementById('valGSR').textContent = `${l.gsr ? l.gsr.toFixed(1) : '--'} : 1`;
   document.getElementById('valUpdated').textContent = RAW_DATA.updated;
 
@@ -578,28 +626,31 @@ function renderDashboard() {
     }
   });
 
-  // Chart 4: Shadow Gold Price
-  if (charts.shadow) charts.shadow.destroy();
-  charts.shadow = new Chart(document.getElementById('chartShadow'), {
-    type: 'line',
+  // Chart 4: Central Bank Buying & Reserves
+  if (charts.cb) charts.cb.destroy();
+  charts.cb = new Chart(document.getElementById('chartCB'), {
+    type: 'bar',
     data: {
       labels: dates,
       datasets: [
         {
-          label: 'Shadow Gold Price ($/oz)',
-          data: RAW_DATA.series.map(s => s.shadow_gold_price),
-          borderColor: '#EF4444',
-          borderWidth: 2,
-          tension: 0.3,
-          pointRadius: 2
+          type: 'bar',
+          label: 'Net Buying (Tonnes/yr)',
+          data: RAW_DATA.series.map(s => s.cb_net_buying_tonnes),
+          backgroundColor: RAW_DATA.series.map(s => s.cb_net_buying_tonnes >= 0 ? 'rgba(168, 85, 247, 0.6)' : 'rgba(239, 68, 68, 0.6)'),
+          borderColor: RAW_DATA.series.map(s => s.cb_net_buying_tonnes >= 0 ? '#A855F7' : '#EF4444'),
+          borderWidth: 1,
+          yAxisID: 'y'
         },
         {
-          label: 'Actual Spot Gold ($/oz)',
-          data: RAW_DATA.series.map(s => s.gold_nominal),
+          type: 'line',
+          label: 'Gold % of FX Reserves',
+          data: RAW_DATA.series.map(s => s.cb_reserve_pct),
           borderColor: '#F59E0B',
           borderWidth: 2,
           tension: 0.3,
-          pointRadius: 2
+          pointRadius: 2,
+          yAxisID: 'y1'
         }
       ]
     },
@@ -608,7 +659,16 @@ function renderDashboard() {
       maintainAspectRatio: false,
       scales: {
         x: { grid: { color: gridColor } },
-        y: { grid: { color: gridColor }, title: { display: true, text: 'USD / oz' } }
+        y: {
+          grid: { color: gridColor },
+          title: { display: true, text: 'Tonnes / Year' },
+          position: 'left'
+        },
+        y1: {
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: 'Gold % of FX Reserves' },
+          position: 'right'
+        }
       }
     }
   });
