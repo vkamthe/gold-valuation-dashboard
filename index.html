@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gold Valuation Dashboard — 50-Year Macro Metrics</title>
-<meta name="description" content="Interactive 50-year gold valuation dashboard analyzing Gold vs US M2 Money Supply, Central Bank Gold Reserves, Inflation-Adjusted Real Price, and Commodity Ratios.">
+<meta name="description" content="Interactive 50-year gold valuation dashboard analyzing Gold vs US M2 Money Supply, Real Inflation-Adjusted Price, and Commodity Ratios.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,6 @@
     --gold-glow: rgba(245, 158, 11, 0.15);
     --accent-blue: #38BDF8;
     --accent-green: #10B981;
-    --accent-purple: #A855F7;
     --accent-red: #EF4444;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
@@ -46,7 +45,6 @@
     --gold-glow: rgba(217, 119, 6, 0.1);
     --accent-blue: #0284C7;
     --accent-green: #059669;
-    --accent-purple: #7E22CE;
     --accent-red: #DC2626;
   }
 
@@ -61,7 +59,7 @@
   }
 
   .container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 2rem 1.25rem 4rem;
   }
@@ -72,8 +70,8 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--border);
   }
 
@@ -99,9 +97,9 @@
   }
 
   h1 {
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 700;
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     letter-spacing: -0.02em;
     background: linear-gradient(135deg, var(--text-primary) 60%, var(--gold-bright));
     -webkit-background-clip: text;
@@ -139,7 +137,7 @@
     background: var(--bg-card-hover);
   }
 
-  /* Method Collapsible - Collapsed by default */
+  /* Method Collapsible - Guaranteed Collapsed by default */
   details.method-tile {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -157,107 +155,122 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.1rem 0;
+    padding: 1rem 0;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--gold-bright);
   }
   details.method-tile > summary::-webkit-details-marker { display: none; }
   .chev {
     color: var(--text-muted);
-    font-size: 18px;
+    font-size: 16px;
     transition: transform 0.2s;
   }
   details.method-tile[open] .chev { transform: rotate(180deg); }
 
   .method-body {
     padding: 0 0 1.25rem;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-secondary);
     border-top: 1px solid var(--border);
   }
   .method-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem;
+    gap: 1rem;
     margin-top: 1rem;
   }
   .method-card {
     background: var(--bg-main);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 1rem;
+    padding: 0.9rem;
   }
   .method-card h4 {
-    margin: 0 0 6px;
+    margin: 0 0 4px;
     color: var(--text-primary);
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 13px;
   }
   .method-card p {
     margin: 0;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.5;
   }
 
   .update-box {
-    margin-top: 1.25rem;
-    padding: 0.9rem 1.1rem;
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
     background: var(--bg-main);
     border: 1px dashed var(--border-strong);
-    border-radius: 10px;
-    font-size: 13px;
+    border-radius: 8px;
+    font-size: 12px;
   }
   .update-box strong { color: var(--gold-bright); }
 
-  /* Summary Metrics Cards Grid */
-  .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .metric-card {
+  /* 3 Metric & Chart Paired Sections */
+  .section-pair {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.2s;
   }
-  .metric-card:hover {
-    transform: translateY(-2px);
+  .section-pair:hover {
     border-color: var(--border-strong);
   }
-  .metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--border);
+
+  .pair-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
   }
-  .metric-card.gold-card::before { background: var(--gold); }
-  .metric-card.blue-card::before { background: var(--accent-blue); }
-  .metric-card.purple-card::before { background: var(--accent-purple); }
-  .metric-card.green-card::before { background: var(--accent-green); }
+
+  .pair-title-box h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pair-title-box p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .pair-metric-box {
+    text-align: right;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+  }
+  @media (max-width: 600px) {
+    .pair-metric-box { text-align: left; width: 100%; }
+  }
 
   .metric-lbl {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
-    margin-bottom: 6px;
+    margin-bottom: 2px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
   }
+  @media (max-width: 600px) { .metric-lbl { justify-content: flex-start; } }
+
   .date-tag {
     font-size: 11px;
     font-weight: 500;
@@ -267,53 +280,27 @@
     border-radius: 4px;
     font-family: var(--font-mono);
   }
+
   .metric-val {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     font-family: var(--font-mono);
     color: var(--text-primary);
-    margin-bottom: 4px;
+    line-height: 1.2;
   }
+  .metric-val.blue { color: var(--accent-blue); }
+  .metric-val.gold { color: var(--gold-bright); }
+  .metric-val.green { color: var(--accent-green); }
+
   .metric-sub {
     font-size: 12px;
     color: var(--text-secondary);
+    margin-top: 2px;
   }
 
-  /* Chart Layout */
-  .charts-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  @media (max-width: 600px) {
-    .charts-section { grid-template-columns: 1fr; }
-  }
-
-  .chart-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-  }
-  .chart-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  .chart-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  .chart-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
   .canvas-wrapper {
     position: relative;
-    height: 300px;
+    height: 320px;
     width: 100%;
   }
 
@@ -339,7 +326,7 @@
     <div>
       <div class="badge"><span class="dot"></span> 50-YEAR MACRO VALUATION MODEL</div>
       <h1>Gold Valuation Dashboard</h1>
-      <p class="sub">Evaluating USD Gold prices (1971 – 2026) vs Money Supply, Central Bank Reserves & Commodity Ratios.</p>
+      <p class="sub">Evaluating USD Gold prices (1971 – 2026) vs Money Supply, Real CPI Inflation & Commodity Ratios.</p>
     </div>
     <div class="actions">
       <button class="toggle-btn" id="themeBtn" aria-label="Toggle Theme">
@@ -348,7 +335,7 @@
     </div>
   </header>
 
-  <!-- Method & Principles (Collapsed by default) -->
+  <!-- Principles / Framework (Strictly collapsed by default) -->
   <details class="method-tile">
     <summary>
       <span>📖 Valuation Framework, Method & Update Schedule</span>
@@ -361,15 +348,11 @@
           <p>Measures fiat currency creation backed by global gold stock (~212,500 tonnes). At the 1980 inflation peak, Gold market cap equaled 100%+ of US M2. At the 2000 trough, it dropped to ~15%.</p>
         </div>
         <div class="method-card">
-          <h4>🏛 Central Bank Reserve Buying</h4>
-          <p>Tracks net annual gold purchases by global central banks (metric tonnes/year) and central bank gold as a % of total global foreign exchange reserves.</p>
-        </div>
-        <div class="method-card">
           <h4>📊 Real Gold Price (CPI-Adjusted)</h4>
           <p>Strips out 50+ years of US CPI inflation to evaluate gold's true purchasing power in constant 2026 USD terms.</p>
         </div>
         <div class="method-card">
-          <h4>⚖️ Gold / Silver & Oil Ratios</h4>
+          <h4>⚖️ Precious Metals & Commodity Ratios</h4>
           <p>Cross-asset purchasing power. Historical Gold/Silver ratio averages ~62.5, while Gold/Oil averages ~18 barrels/oz.</p>
         </div>
       </div>
@@ -381,103 +364,72 @@
     </div>
   </details>
 
-  <!-- Summary Cards -->
-  <div class="metrics-grid">
-    <div class="metric-card gold-card">
-      <div class="metric-lbl">
-        <span>Gold Spot Price (USD)</span>
-        <span class="date-tag" id="dateSpot">--</span>
+  <!-- SECTION 1: Gold / US M2 Money Supply -->
+  <div class="section-pair">
+    <div class="pair-header">
+      <div class="pair-title-box">
+        <h2>💵 1. Gold Market Cap vs. US M2 Money Supply (%)</h2>
+        <p>Measures paper currency debasement by comparing global gold market cap to total US M2 money supply.</p>
       </div>
-      <div class="metric-val" id="valSpot">$0.00</div>
-      <div class="metric-sub" id="valCap">Market Cap: --</div>
+      <div class="pair-metric-box">
+        <div class="metric-lbl">
+          <span>Gold / US M2 Ratio</span>
+          <span class="date-tag" id="dateM2">--</span>
+        </div>
+        <div class="metric-val blue" id="valM2Pct">0.0%</div>
+        <div class="metric-sub" id="valM2Sub">1980 Peak: 100% · 2000 Trough: 15%</div>
+      </div>
     </div>
-
-    <div class="metric-card blue-card">
-      <div class="metric-lbl">
-        <span>Gold / US M2 Ratio</span>
-        <span class="date-tag" id="dateM2">--</span>
-      </div>
-      <div class="metric-val" id="valM2Pct">0.0%</div>
-      <div class="metric-sub">1980 Peak: 100% · 2000 Trough: 15%</div>
-    </div>
-
-    <div class="metric-card purple-card">
-      <div class="metric-lbl">
-        <span>Central Bank Buying</span>
-        <span class="date-tag" id="dateCB">--</span>
-      </div>
-      <div class="metric-val" id="valCB">+0 t/yr</div>
-      <div class="metric-sub" id="valCBRes">Gold % of FX Reserves: --</div>
-    </div>
-
-    <div class="metric-card green-card">
-      <div class="metric-lbl">
-        <span>Gold / Silver Ratio</span>
-        <span class="date-tag" id="dateGSR">--</span>
-      </div>
-      <div class="metric-val" id="valGSR">0.0</div>
-      <div class="metric-sub">50-Yr Historical Mean: 62.5</div>
+    <div class="canvas-wrapper">
+      <canvas id="chartM2"></canvas>
     </div>
   </div>
 
-  <!-- Charts Section -->
-  <div class="charts-section">
-    <!-- Chart 1: Gold / M2 Ratio -->
-    <div class="chart-box">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Gold Market Cap vs. US M2 Money Supply (%)</div>
-          <div class="chart-desc">Historical paper currency debasement ratio (1971–2026)</div>
-        </div>
+  <!-- SECTION 2: Nominal vs. Inflation-Adjusted (Real) Gold Price -->
+  <div class="section-pair">
+    <div class="pair-header">
+      <div class="pair-title-box">
+        <h2>📊 2. Nominal vs. Inflation-Adjusted (Real) Gold Price</h2>
+        <p>Strips out 50+ years of US CPI inflation to evaluate gold's true purchasing power in constant 2026 USD.</p>
       </div>
-      <div class="canvas-wrapper">
-        <canvas id="chartM2"></canvas>
+      <div class="pair-metric-box">
+        <div class="metric-lbl">
+          <span>Nominal Spot Price</span>
+          <span class="date-tag" id="dateSpot">--</span>
+        </div>
+        <div class="metric-val gold" id="valSpot">$0.00</div>
+        <div class="metric-sub" id="valRealSub">Real Price (2026 USD): --</div>
       </div>
     </div>
+    <div class="canvas-wrapper">
+      <canvas id="chartRealPrice"></canvas>
+    </div>
+  </div>
 
-    <!-- Chart 2: Nominal vs Real Price -->
-    <div class="chart-box">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Nominal vs. Inflation-Adjusted (Real) Gold Price</div>
-          <div class="chart-desc">Purchasing power adjusted to 2026 CPI USD</div>
-        </div>
+  <!-- SECTION 3: Precious Metals & Commodity Ratios -->
+  <div class="section-pair">
+    <div class="pair-header">
+      <div class="pair-title-box">
+        <h2>⚖️ 3. Precious Metals & Commodity Ratios</h2>
+        <p>Cross-asset purchasing power metrics comparing Gold to Silver (GSR) and Gold to Crude Oil (bbl/oz).</p>
       </div>
-      <div class="canvas-wrapper">
-        <canvas id="chartRealPrice"></canvas>
+      <div class="pair-metric-box">
+        <div class="metric-lbl">
+          <span>Gold / Silver Ratio</span>
+          <span class="date-tag" id="dateGSR">--</span>
+        </div>
+        <div class="metric-val green" id="valGSR">0.0</div>
+        <div class="metric-sub" id="valRatioSub">Gold / Oil: -- bbl/oz · 50-Yr GSR Mean: 62.5</div>
       </div>
     </div>
-
-    <!-- Chart 3: Cross Asset Ratios -->
-    <div class="chart-box">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Precious Metals & Commodity Ratios</div>
-          <div class="chart-desc">Gold-to-Silver Ratio (GSR) & Gold-to-Oil Ratio</div>
-        </div>
-      </div>
-      <div class="canvas-wrapper">
-        <canvas id="chartRatios"></canvas>
-      </div>
-    </div>
-
-    <!-- Chart 4: Central Bank Gold Buying & Reserves -->
-    <div class="chart-box">
-      <div class="chart-header">
-        <div>
-          <div class="chart-title">Central Bank Gold Net Buying & Reserves</div>
-          <div class="chart-desc">Net Annual Purchases (Tonnes/yr) & Gold % of Global FX Reserves</div>
-        </div>
-      </div>
-      <div class="canvas-wrapper">
-        <canvas id="chartCB"></canvas>
-      </div>
+    <div class="canvas-wrapper">
+      <canvas id="chartRatios"></canvas>
     </div>
   </div>
 
   <footer>
     <div>Data Last Updated: <span id="valUpdated">--</span></div>
-    <div>Automated Daily via GitHub Actions · Sources: LBMA, FRED, WGC, Yahoo Finance</div>
+    <div>Automated Daily via GitHub Actions · Sources: LBMA, FRED, World Gold Council, Yahoo Finance</div>
   </footer>
 </div>
 
@@ -503,19 +455,21 @@ function renderDashboard() {
   const l = RAW_DATA.latest;
   const dateStr = l.date || 'Current';
 
-  // Dates on Cards
-  document.getElementById('dateSpot').textContent = dateStr;
+  // Section 1: M2
   document.getElementById('dateM2').textContent = dateStr;
-  document.getElementById('dateCB').textContent = dateStr;
-  document.getElementById('dateGSR').textContent = dateStr;
-
-  // Header & Card Values
-  document.getElementById('valSpot').textContent = fmtCurr(l.gold_price);
-  document.getElementById('valCap').textContent = `Market Cap: $${l.gold_mkt_cap_trillion} Trillion`;
   document.getElementById('valM2Pct').textContent = `${l.gold_m2_pct.toFixed(1)}%`;
-  document.getElementById('valCB').textContent = `+${l.cb_net_buying_tonnes} t/yr`;
-  document.getElementById('valCBRes').textContent = `Gold % of FX Reserves: ${l.cb_reserve_pct}%`;
+  document.getElementById('valM2Sub').textContent = `Gold Cap: $${l.gold_mkt_cap_trillion}T · US M2: $${l.m2_trillion}T`;
+
+  // Section 2: Real Price
+  document.getElementById('dateSpot').textContent = dateStr;
+  document.getElementById('valSpot').textContent = fmtCurr(l.gold_price);
+  document.getElementById('valRealSub').textContent = `Real Price (2026 USD): ${fmtCurr(l.real_gold_price_2026_usd)}`;
+
+  // Section 3: Ratios
+  document.getElementById('dateGSR').textContent = dateStr;
   document.getElementById('valGSR').textContent = `${l.gsr ? l.gsr.toFixed(1) : '--'} : 1`;
+  document.getElementById('valRatioSub').textContent = `Gold/Oil: ${l.gor ? l.gor.toFixed(1) : '--'} bbl/oz · 50-Yr GSR Mean: 62.5`;
+
   document.getElementById('valUpdated').textContent = RAW_DATA.updated;
 
   const dates = RAW_DATA.series.map(s => s.date);
@@ -538,10 +492,10 @@ function renderDashboard() {
         label: 'Gold / US M2 Ratio (%)',
         data: RAW_DATA.series.map(s => s.gold_m2_pct),
         borderColor: '#38BDF8',
-        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+        backgroundColor: 'rgba(56, 189, 248, 0.12)',
         fill: true,
         tension: 0.3,
-        borderWidth: 2,
+        borderWidth: 2.5,
         pointRadius: 3
       }]
     },
@@ -602,7 +556,7 @@ function renderDashboard() {
           label: 'Gold/Silver Ratio (GSR)',
           data: RAW_DATA.series.map(s => s.gsr),
           borderColor: '#10B981',
-          borderWidth: 2,
+          borderWidth: 2.5,
           tension: 0.3,
           pointRadius: 2
         },
@@ -625,53 +579,6 @@ function renderDashboard() {
       }
     }
   });
-
-  // Chart 4: Central Bank Buying & Reserves
-  if (charts.cb) charts.cb.destroy();
-  charts.cb = new Chart(document.getElementById('chartCB'), {
-    type: 'bar',
-    data: {
-      labels: dates,
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Net Buying (Tonnes/yr)',
-          data: RAW_DATA.series.map(s => s.cb_net_buying_tonnes),
-          backgroundColor: RAW_DATA.series.map(s => s.cb_net_buying_tonnes >= 0 ? 'rgba(168, 85, 247, 0.6)' : 'rgba(239, 68, 68, 0.6)'),
-          borderColor: RAW_DATA.series.map(s => s.cb_net_buying_tonnes >= 0 ? '#A855F7' : '#EF4444'),
-          borderWidth: 1,
-          yAxisID: 'y'
-        },
-        {
-          type: 'line',
-          label: 'Gold % of FX Reserves',
-          data: RAW_DATA.series.map(s => s.cb_reserve_pct),
-          borderColor: '#F59E0B',
-          borderWidth: 2,
-          tension: 0.3,
-          pointRadius: 2,
-          yAxisID: 'y1'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { grid: { color: gridColor } },
-        y: {
-          grid: { color: gridColor },
-          title: { display: true, text: 'Tonnes / Year' },
-          position: 'left'
-        },
-        y1: {
-          grid: { drawOnChartArea: false },
-          title: { display: true, text: 'Gold % of FX Reserves' },
-          position: 'right'
-        }
-      }
-    }
-  });
 }
 
 // Theme Switcher
@@ -687,6 +594,12 @@ themeBtn.addEventListener('click', () => {
   themeIcon.textContent = next === 'dark' ? '🌙' : '☀️';
   themeText.textContent = next === 'dark' ? 'Dark' : 'Light';
   if (RAW_DATA) renderDashboard();
+});
+
+// Guarantee principles section is collapsed on load
+document.addEventListener("DOMContentLoaded", () => {
+  const detailsEl = document.querySelector('details.method-tile');
+  if (detailsEl) detailsEl.removeAttribute('open');
 });
 
 loadData();
